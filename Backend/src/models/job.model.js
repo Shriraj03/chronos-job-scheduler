@@ -1,43 +1,110 @@
 import sequelize from "../config/db.js";
+
 import { DataTypes } from "sequelize";
+
 import { User } from "./user.model.js";
 
-export const Job = sequelize.define('Job', {
-    jobId: {
+export const Job =
+  sequelize.define(
+
+    "Job",
+
+    {
+
+      jobId: {
+
         type: DataTypes.INTEGER,
+
         primaryKey: true,
+
         autoIncrement: true,
-    },
-    userId: {
+
+      },
+
+      userId: {
+
         type: DataTypes.INTEGER,
+
         allowNull: false,
-    },
-    title: {
+
+      },
+
+      title: {
+
         type: DataTypes.STRING,
-        allowNull: false
-    },
-    description: {
+
+        allowNull: false,
+
+      },
+
+      description: {
+
         type: DataTypes.STRING,
+
         allowNull: true,
-    },
-    isActive: {
+
+      },
+
+      isActive: {
+
         type: DataTypes.BOOLEAN,
+
         allowNull: false,
-        defaultValue: true
-    },
-    retryLimit: {
+
+        defaultValue: true,
+
+      },
+
+      retryLimit: {
+
         type: DataTypes.INTEGER,
+
         allowNull: false,
-        defaultValue: 3
+
+        defaultValue: 3,
+
+      },
+
+      status: {
+
+        type: DataTypes.ENUM(
+
+          "pending",
+
+          "running",
+
+          "completed",
+
+          "failed",
+
+          "paused"
+
+        ),
+
+        defaultValue: "pending",
+
+      },
+
     },
-}, {
-    timestamps: true
-});
+
+    {
+
+      timestamps: true,
+
+    }
+
+  );
+
 User.hasMany(Job, {
-    foreignKey: "userId",
-    onDelete: "CASCADE",
+
+  foreignKey: "userId",
+
+  onDelete: "CASCADE",
+
 });
 
 Job.belongsTo(User, {
-    foreignKey: "userId",
+
+  foreignKey: "userId",
+
 });

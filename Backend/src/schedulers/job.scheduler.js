@@ -1,26 +1,40 @@
 import { Op } from "sequelize";
 
-import { CronExpressionParser } from "cron-parser";
+import { CronExpressionParser }
+from "cron-parser";
 
-import { Scheduling } from "../models/scheduling.model.js";
+import { Scheduling }
+from "../models/scheduling.model.js";
 
-import { jobQueue } from "../queues/job.queue.js";
+import { jobQueue }
+from "../queues/job.queue.js";
 
-export const startScheduler = () => {
+export const startScheduler =
+() => {
 
   setInterval(async () => {
 
     try {
 
-      console.log("Checking scheduled jobs...");
+      console.log(
+        "Checking scheduled jobs..."
+      );
 
-      const dueJobs = await Scheduling.findAll({
-        where: {
-          nextRunAt: {
-            [Op.lte]: new Date(),
+      const dueJobs =
+        await Scheduling.findAll({
+
+          where: {
+
+            nextRunAt: {
+
+              [Op.lte]:
+                new Date(),
+
+            },
+
           },
-        },
-      });
+
+        });
 
       console.log(
         "Due Jobs Found:",
@@ -30,31 +44,44 @@ export const startScheduler = () => {
       for (const job of dueJobs) {
 
         await jobQueue.add(
+
           "executeJob",
+
           {
-            jobId: job.jobId,
+
+            jobId:
+              job.jobId,
+
           },
+
           {
+
             attempts: 3,
 
             backoff: {
+
               type: "fixed",
+
               delay: 5000,
+
             },
+
           }
+
         );
 
         console.log(
           `Job Added To Queue: ${job.jobId}`
         );
 
-        // =========================
-        // RECURRING CRON JOB
-        // =========================
+        // ======================
+        // CRON RECURRING JOB
+        // ======================
 
         if (job.cron) {
 
           const interval =
+
             CronExpressionParser.parse(
               job.cron
             );
@@ -64,11 +91,13 @@ export const startScheduler = () => {
 
         }
 
-        // =========================
+        // ======================
         // ONE TIME JOB
-        // =========================
+        // ======================
 
         else {
+
+          // VERY IMPORTANT
 
           job.nextRunAt = null;
 
@@ -81,8 +110,11 @@ export const startScheduler = () => {
     } catch (error) {
 
       console.log(
+
         "Scheduler Error:",
+
         error.message
+
       );
 
     }

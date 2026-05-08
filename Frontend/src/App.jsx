@@ -1,14 +1,68 @@
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+
+import Login from "./pages/Login";
+
+import Dashboard from "./pages/Dashboard";
+
+import CreateJob from "./pages/CreateJob";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+
+import Executions from "./pages/Executions";
+
 function App() {
 
   return (
 
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+    <BrowserRouter>
 
-      <h1 className="text-4xl font-bold text-purple-600">
-        Chronos Job Scheduler
-      </h1>
+      <Routes>
 
-    </div>
+        <Route
+          path="/"
+          element={<Login />}
+        />
+
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+
+              <Dashboard />
+
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/create-job"
+          element={
+            <ProtectedRoute>
+
+              <CreateJob />
+
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/jobs/:jobId/executions"
+          element={
+            <ProtectedRoute>
+
+              <Executions />
+
+            </ProtectedRoute>
+          }
+        />
+
+      </Routes>
+
+    </BrowserRouter>
 
   );
 

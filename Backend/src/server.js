@@ -10,8 +10,11 @@ import authRoutes from "./routes/auth.routes.js";
 import jobRoutes from "./routes/job.routes.js";
 import { startScheduler } from "./schedulers/job.scheduler.js";
 import "./workers/job.worker.js";
+import cors from "cors";
 
 const app = express();
+
+app.use(cors());
 
 app.use(express.json());
 
@@ -28,7 +31,8 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log("DB connected ✅");
 
-    await sequelize.sync({ alter: true });
+    //await sequelize.sync({ alter: true });
+    await sequelize.sync();
     console.log("Tables synced ✅");
 
     startScheduler();//keeps polling every 5sec
