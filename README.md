@@ -14,7 +14,7 @@ The system allows users to create, manage, monitor, and track scheduled jobs wit
 - JWT Authentication
 - Protected Routes
 
----
+---  
 
 ## Job Scheduling
 - Create One-Time Jobs
