@@ -4,11 +4,17 @@ import api from "../services/api";
 
 import Sidebar from "../components/Sidebar";
 
+import { useNavigate } from "react-router-dom";
+
 import toast from "react-hot-toast";
 
 function CreateJob() {
 
-    const [title, setTitle] =
+    const navigate =
+        useNavigate();
+
+    const [title,
+        setTitle] =
         useState("");
 
     const [description,
@@ -19,15 +25,29 @@ function CreateJob() {
         setRetryLimit] =
         useState(1);
 
-    const [runAt, setRunAt] =
+    const [cron,
+        setCron] =
         useState("");
 
-    const [cron, setCron] =
+    const [runAt,
+        setRunAt] =
         useState("");
 
-    const [jobType,
-        setJobType] =
-        useState("one-time");
+    const cronOptions = {
+
+        "Every Minute":
+            "* * * * *",
+
+        "Every 5 Minutes":
+            "*/5 * * * *",
+
+        "Every Hour":
+            "0 * * * *",
+
+        "Every Day":
+            "0 0 * * *",
+
+    };
 
     const handleSubmit =
         async (e) => {
@@ -37,6 +57,7 @@ function CreateJob() {
             try {
 
                 await api.post(
+
                     "/jobs",
 
                     {
@@ -47,48 +68,32 @@ function CreateJob() {
 
                         retryLimit,
 
+                        cron,
+
                         runAt:
-                            jobType ===
-                                "one-time"
-
-                                ? runAt
-
-                                : null,
-
-                        cron:
-                            jobType ===
-                                "recurring"
-
-                                ? cron
-
-                                : null,
+                            runAt || null,
 
                         timezone:
                             "Asia/Kolkata",
 
                     }
+
                 );
 
                 toast.success(
-                    "Job created"
+                    "Job created successfully"
                 );
 
-                setTitle("");
-
-                setDescription("");
-
-                setRetryLimit(1);
-
-                setRunAt("");
-
-                setCron("");
+                navigate(
+                    "/dashboard"
+                );
 
             } catch (error) {
 
                 console.log(error);
 
                 toast.error(
-                    "Create failed"
+                    "Failed to create job"
                 );
 
             }
@@ -103,9 +108,9 @@ function CreateJob() {
 
             <div className="flex-1 p-10">
 
-                <div className="bg-white rounded-2xl shadow-md p-10 max-w-2xl mx-auto">
+                <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-md p-10">
 
-                    <h1 className="text-4xl font-bold text-purple-600 mb-8">
+                    <h1 className="text-4xl font-bold text-gray-800 mb-8">
                         Create Job
                     </h1>
 
@@ -114,104 +119,140 @@ function CreateJob() {
                         className="space-y-6"
                     >
 
-                        <input
-                            type="text"
-                            placeholder="Job Title"
-                            value={title}
-                            onChange={(e) =>
-                                setTitle(
-                                    e.target.value
-                                )
-                            }
-                            className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
-                            required
-                        />
+                        <div>
 
-                        <textarea
-                            placeholder="Job Description"
-                            value={description}
-                            onChange={(e) =>
-                                setDescription(
-                                    e.target.value
-                                )
-                            }
-                            className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
-                        />
+                            <label className="block text-gray-700 font-semibold mb-2">
+                                Job Title
+                            </label>
 
-                        <input
-                            type="number"
-                            placeholder="Retry Limit"
-                            value={retryLimit}
-                            onChange={(e) =>
-                                setRetryLimit(
-                                    e.target.value
-                                )
-                            }
-                            className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
-                        />
+                            <input
+                                type="text"
+                                placeholder="Enter job title"
+                                value={title}
+                                onChange={(e) =>
+                                    setTitle(
+                                        e.target.value
+                                    )
+                                }
+                                className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
+                                required
+                            />
 
-                        <select
-                            value={jobType}
-                            onChange={(e) =>
-                                setJobType(
-                                    e.target.value
-                                )
-                            }
-                            className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
-                        >
+                        </div>
 
-                            <option value="one-time">
-                                One Time Job
-                            </option>
+                        <div>
 
-                            <option value="recurring">
-                                Recurring Job
-                            </option>
+                            <label className="block text-gray-700 font-semibold mb-2">
+                                Description
+                            </label>
 
-                        </select>
+                            <textarea
+                                placeholder="Enter description"
+                                value={description}
+                                onChange={(e) =>
+                                    setDescription(
+                                        e.target.value
+                                    )
+                                }
+                                className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
+                                rows="4"
+                            />
 
-                        {
-                            jobType ===
-                                "one-time" && (
+                        </div>
 
-                                    <input
-                                        type="datetime-local"
-                                        value={runAt}
-                                        onChange={(e) =>
-                                            setRunAt(
-                                                e.target.value
-                                            )
-                                        }
-                                        className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
-                                        required
-                                    />
+                        <div>
 
-                                )
-                        }
+                            <label className="block text-gray-700 font-semibold mb-2">
+                                Retry Limit
+                            </label>
 
-                        {
-                            jobType ===
-                                "recurring" && (
+                            <input
+                                type="number"
+                                value={retryLimit}
+                                onChange={(e) =>
+                                    setRetryLimit(
+                                        e.target.value
+                                    )
+                                }
+                                className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
+                                min="1"
+                            />
 
-                                    <input
-                                        type="text"
-                                        placeholder="Cron Expression (Example: */1 * * * *)"
-                                        value={cron}
-                                        onChange={(e) =>
-                                            setCron(
-                                                e.target.value
-                                            )
-                                        }
-                                        className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
-                                        required
-                                    />
+                        </div>
 
-                                )
-                        }
+                        <div>
+
+                            <label className="block text-gray-700 font-semibold mb-2">
+                                Recurring Schedule
+                            </label>
+
+                            <select
+
+                                value={cron}
+
+                                onChange={(e) =>
+                                    setCron(
+                                        e.target.value
+                                    )
+                                }
+
+                                className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
+
+                            >
+
+                                <option value="">
+                                    Select Schedule
+                                </option>
+
+                                {
+
+                                    Object.entries(
+                                        cronOptions
+                                    ).map(
+
+                                        ([label, value]) => (
+
+                                            <option
+                                                key={value}
+                                                value={value}
+                                            >
+
+                                                {label}
+
+                                            </option>
+
+                                        )
+
+                                    )
+
+                                }
+
+                            </select>
+
+                        </div>
+
+                        <div>
+
+                            <label className="block text-gray-700 font-semibold mb-2">
+                                Run At (One-Time Job)
+                            </label>
+
+                            <input
+                                type="datetime-local"
+                                value={runAt}
+                                onChange={(e) =>
+                                    setRunAt(
+                                        e.target.value
+                                    )
+                                }
+                                className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
+                            />
+
+                        </div>
 
                         <button
                             type="submit"
-                            className="w-full bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-xl font-semibold"
+                            className="w-full bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-xl font-semibold transition"
                         >
                             Create Job
                         </button>

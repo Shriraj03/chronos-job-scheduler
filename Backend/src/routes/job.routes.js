@@ -16,15 +16,15 @@ import {
 
   updateJob,
 
+  getExecutionLogs,
+
 } from "../controllers/job.controller.js";
 
-import {
+import { authMiddleware }
+from "../middlewares/auth.middleware.js";
 
-  authMiddleware,
-
-} from "../middlewares/auth.middleware.js";
-
-const router = express.Router();
+const router =
+  express.Router();
 
 router.post(
   "/",
@@ -56,16 +56,22 @@ router.patch(
   toggleJobStatus
 );
 
+router.delete(
+  "/:jobId",
+  authMiddleware,
+  deleteJob
+);
+
 router.put(
   "/:jobId",
   authMiddleware,
   updateJob
 );
 
-router.delete(
-  "/:jobId",
+router.get(
+  "/executions/:executionId/logs",
   authMiddleware,
-  deleteJob
+  getExecutionLogs
 );
 
 export default router;

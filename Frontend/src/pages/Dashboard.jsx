@@ -27,6 +27,10 @@ function Dashboard() {
     const [jobs, setJobs] =
         useState([]);
 
+    const [loading,
+        setLoading] =
+        useState(true);
+
     const [stats, setStats] =
         useState({});
 
@@ -109,14 +113,20 @@ function Dashboard() {
 
         try {
 
+            setLoading(true);
+
             const response =
                 await api.get("/jobs");
 
             setJobs(response.data.jobs);
 
+            setLoading(false);
+
         } catch (error) {
 
             console.log(error);
+
+            setLoading(false);
 
         }
 
@@ -433,6 +443,20 @@ function Dashboard() {
 
                 </div>
 
+                {
+                    loading && (
+
+                        <div className="bg-white rounded-2xl shadow-md p-10 text-center mb-10">
+
+                            <h2 className="text-2xl font-bold text-purple-600">
+                                Loading Jobs...
+                            </h2>
+
+                        </div>
+
+                    )
+                }
+
                 <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
 
                     {
@@ -467,44 +491,30 @@ function Dashboard() {
 
                                         <span
                                             className={
-                                                job.isActive
+
+                                                job.status === "completed"
+
                                                     ? "bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full"
-                                                    : "bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full"
+
+                                                    : job.status === "failed"
+
+                                                        ? "bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full"
+
+                                                        : job.status === "running"
+
+                                                            ? "bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full"
+
+                                                            : job.status === "paused"
+
+                                                                ? "bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full"
+
+                                                                : "bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full"
+
                                             }
                                         >
-                                            <span
-                                                className={
 
-                                                    job.status === "completed"
-
-                                                        ? "bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full"
-
-                                                        : job.status === "failed"
-
-                                                            ? "bg-red-100 text-red-700 text-xs px-3 py-1 rounded-full"
-
-                                                            : job.status === "running"
-
-                                                                ? "bg-blue-100 text-blue-700 text-xs px-3 py-1 rounded-full"
-
-                                                                : job.status === "paused"
-
-                                                                    ? "bg-gray-200 text-gray-700 text-xs px-3 py-1 rounded-full"
-
-                                                                    : "bg-yellow-100 text-yellow-700 text-xs px-3 py-1 rounded-full"
-
-                                                }
-                                            >
-
-                                                {
-                                                    job.status
-                                                }
-
-                                            </span>
                                             {
-                                                job.isActive
-                                                    ? "Active"
-                                                    : "Inactive"
+                                                job.status
                                             }
 
                                         </span>

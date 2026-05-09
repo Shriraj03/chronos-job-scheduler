@@ -1,18 +1,26 @@
 import { useState } from "react";
 
-import api from "../services/api";
-
 import {
-    useNavigate,
     Link,
+    useNavigate,
 } from "react-router-dom";
+
+import api from "../services/api";
 
 import toast from "react-hot-toast";
 
-function Login() {
+function Register() {
 
     const navigate =
         useNavigate();
+
+    const [firstName,
+        setFirstName] =
+        useState("");
+
+    const [lastName,
+        setLastName] =
+        useState("");
 
     const [email,
         setEmail] =
@@ -22,46 +30,36 @@ function Login() {
         setPassword] =
         useState("");
 
-    const handleLogin =
+    const handleRegister =
         async (e) => {
 
             e.preventDefault();
 
             try {
 
-                const response =
-                    await api.post(
+                await api.post(
 
-                        "/auth/login",
+                    "/auth/register",
 
-                        {
+                    {
 
-                            email,
+                        firstName,
 
-                            password,
+                        lastName,
 
-                        }
+                        email,
 
-                    );
+                        password,
 
-                console.log(
-                    response.data
-                );
+                    }
 
-                localStorage.setItem(
-
-                    "token",
-
-                    response.data.token
                 );
 
                 toast.success(
-                    "Login successful"
+                    "Registration successful"
                 );
 
-                navigate(
-                    "/dashboard"
-                );
+                navigate("/");
 
             } catch (error) {
 
@@ -71,7 +69,7 @@ function Login() {
 
                     error.response?.data?.message ||
 
-                    "Login failed"
+                    "Registration failed"
 
                 );
 
@@ -86,13 +84,43 @@ function Login() {
             <div className="bg-white w-full max-w-md p-8 rounded-2xl shadow-lg">
 
                 <h1 className="text-3xl font-bold text-center text-purple-600 mb-8">
-                    Chronos Login
+                    Create Account
                 </h1>
 
                 <form
-                    onSubmit={handleLogin}
+                    onSubmit={handleRegister}
                     className="space-y-5"
                 >
+
+                    <div className="grid grid-cols-2 gap-4">
+
+                        <input
+                            type="text"
+                            placeholder="First Name"
+                            value={firstName}
+                            onChange={(e) =>
+                                setFirstName(
+                                    e.target.value
+                                )
+                            }
+                            className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
+                            required
+                        />
+
+                        <input
+                            type="text"
+                            placeholder="Last Name"
+                            value={lastName}
+                            onChange={(e) =>
+                                setLastName(
+                                    e.target.value
+                                )
+                            }
+                            className="w-full border border-gray-300 rounded-xl p-4 outline-none focus:border-purple-500"
+                            required
+                        />
+
+                    </div>
 
                     <input
                         type="email"
@@ -124,22 +152,22 @@ function Login() {
                         type="submit"
                         className="w-full bg-purple-600 hover:bg-purple-700 text-white p-4 rounded-xl font-semibold"
                     >
-                        Login
+                        Register
                     </button>
 
                 </form>
 
                 <p className="text-center text-gray-500 mt-6">
 
-                    Don't have an account?
+                    Already have an account?
 
                     {" "}
 
                     <Link
-                        to="/register"
+                        to="/"
                         className="text-purple-600 font-semibold hover:underline"
                     >
-                        Register
+                        Login
                     </Link>
 
                 </p>
@@ -152,4 +180,4 @@ function Login() {
 
 }
 
-export default Login;
+export default Register;

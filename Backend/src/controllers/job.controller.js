@@ -1,76 +1,82 @@
-import * as jobService from "../services/job.service.js";
+import * as jobService
+from "../services/job.service.js";
 
-export const createJob = async (
-  req,
-  res
-) => {
+import { Log }
+from "../models/log.model.js";
 
-  try {
+export const createJob =
+  async (req, res) => {
 
-    const result =
-      await jobService.createJob(
-        req.body,
-        req.user
-      );
+    try {
 
-    res.status(201).json({
+      const result =
+        await jobService.createJob(
 
-      success: true,
+          req.body,
 
-      message:
-        "Job created successfully",
+          req.user
 
-      data: result,
+        );
 
-    });
+      res.status(201).json({
 
-  } catch (error) {
+        success: true,
 
-    res.status(400).json({
+        ...result,
 
-      success: false,
+      });
 
-      message: error.message,
+    } catch (error) {
 
-    });
+      console.log(error);
 
-  }
+      res.status(500).json({
 
-};
+        success: false,
 
-export const getJobs = async (
-  req,
-  res
-) => {
+        message:
+          error.message,
 
-  try {
+      });
 
-    const jobs =
-      await jobService.getJobs(
-        req.user
-      );
+    }
 
-    res.status(200).json({
+  };
 
-      success: true,
+export const getJobs =
+  async (req, res) => {
 
-      jobs,
+    try {
 
-    });
+      const jobs =
+        await jobService.getJobs(
+          req.user
+        );
 
-  } catch (error) {
+      res.status(200).json({
 
-    res.status(500).json({
+        success: true,
 
-      success: false,
+        jobs,
 
-      message: error.message,
+      });
 
-    });
+    } catch (error) {
 
-  }
+      console.log(error);
 
-};
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
+
+      });
+
+    }
+
+  };
 
 export const getExecutions =
   async (req, res) => {
@@ -79,7 +85,9 @@ export const getExecutions =
 
       const executions =
         await jobService.getExecutions(
+
           req.params.jobId
+
         );
 
       res.status(200).json({
@@ -92,11 +100,14 @@ export const getExecutions =
 
     } catch (error) {
 
+      console.log(error);
+
       res.status(500).json({
 
         success: false,
 
-        message: error.message,
+        message:
+          error.message,
 
       });
 
@@ -124,11 +135,14 @@ export const getStats =
 
     } catch (error) {
 
+      console.log(error);
+
       res.status(500).json({
 
         success: false,
 
-        message: error.message,
+        message:
+          error.message,
 
       });
 
@@ -143,7 +157,9 @@ export const toggleJobStatus =
 
       const job =
         await jobService.toggleJobStatus(
+
           req.params.jobId
+
         );
 
       res.status(200).json({
@@ -156,11 +172,14 @@ export const toggleJobStatus =
 
     } catch (error) {
 
+      console.log(error);
+
       res.status(500).json({
 
         success: false,
 
-        message: error.message,
+        message:
+          error.message,
 
       });
 
@@ -173,26 +192,31 @@ export const deleteJob =
 
     try {
 
-      await jobService.deleteJob(
-        req.params.jobId
-      );
+      const result =
+        await jobService.deleteJob(
+
+          req.params.jobId
+
+        );
 
       res.status(200).json({
 
         success: true,
 
-        message:
-          "Job deleted successfully",
+        ...result,
 
       });
 
     } catch (error) {
 
+      console.log(error);
+
       res.status(500).json({
 
         success: false,
 
-        message: error.message,
+        message:
+          error.message,
 
       });
 
@@ -224,11 +248,60 @@ export const updateJob =
 
     } catch (error) {
 
+      console.log(error);
+
       res.status(500).json({
 
         success: false,
 
-        message: error.message,
+        message:
+          error.message,
+
+      });
+
+    }
+
+  };
+
+export const getExecutionLogs =
+  async (req, res) => {
+
+    try {
+
+      const { executionId } =
+        req.params;
+
+      const logs =
+        await Log.findAll({
+
+          where: {
+            executionId,
+          },
+
+          order: [
+            ["createdAt", "DESC"],
+          ],
+
+        });
+
+      res.status(200).json({
+
+        success: true,
+
+        logs,
+
+      });
+
+    } catch (error) {
+
+      console.log(error);
+
+      res.status(500).json({
+
+        success: false,
+
+        message:
+          error.message,
 
       });
 

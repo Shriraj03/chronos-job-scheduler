@@ -6,6 +6,8 @@ import {
 
 import Login from "./pages/Login";
 
+import Register from "./pages/Register";
+
 import Dashboard from "./pages/Dashboard";
 
 import CreateJob from "./pages/CreateJob";
@@ -25,6 +27,11 @@ function App() {
         <Route
           path="/"
           element={<Login />}
+        />
+
+        <Route
+          path="/register"
+          element={<Register />}
         />
 
         <Route
